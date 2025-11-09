@@ -4,6 +4,7 @@ import { useState } from 'react'
 export default function FileUpload({ onFileSelect, accept = '.pdf,.docx,.xlsx,.csv', multiple = false }) {
   const [files, setFiles] = useState([])
   const [isDragging, setIsDragging] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const handleDragOver = (e) => {
     e.preventDefault()
@@ -30,6 +31,10 @@ export default function FileUpload({ onFileSelect, accept = '.pdf,.docx,.xlsx,.c
     const updatedFiles = multiple ? [...files, ...newFiles] : newFiles
     setFiles(updatedFiles)
     onFileSelect?.(updatedFiles)
+    
+    // Show success message
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 3000)
   }
 
   const removeFile = (index) => {
@@ -40,14 +45,24 @@ export default function FileUpload({ onFileSelect, accept = '.pdf,.docx,.xlsx,.c
 
   return (
     <div className="space-y-3">
+      {/* Success notification */}
+      {showSuccess && (
+        <div className="flex items-center gap-3 p-3 bg-eco-400/10 border border-eco-400/20 rounded-lg animate-slide-up">
+          <CheckCircle2 className="w-5 h-5 text-eco-400 flex-shrink-0" />
+          <span className="text-sm text-eco-400 font-medium">
+            {files.length} document{files.length > 1 ? 's' : ''} uploaded successfully!
+          </span>
+        </div>
+      )}
+      
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
+        className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 transform ${
           isDragging
-            ? 'border-eco-500 bg-eco-500/10'
-            : 'border-dark-border hover:border-eco-600/50 hover:bg-dark-elevated'
+            ? 'border-eco-500 bg-eco-500/10 scale-105'
+            : 'border-dark-border hover:border-eco-600/50 hover:bg-dark-elevated hover:scale-102'
         }`}
       >
         <input
@@ -58,13 +73,17 @@ export default function FileUpload({ onFileSelect, accept = '.pdf,.docx,.xlsx,.c
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
         
-        <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? 'text-eco-500' : 'text-dark-muted'}`} />
+        <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br rounded-2xl flex items-center justify-center transition-all duration-300 ${
+          isDragging ? 'from-eco-500 to-eco-600 scale-110' : 'from-eco-500/20 to-eco-600/20'
+        }`}>
+          <Upload className={`w-8 h-8 transition-colors ${isDragging ? 'text-white' : 'text-eco-400'}`} />
+        </div>
         
         <p className="text-dark-text font-medium mb-1">
           Drop files here or click to browse
         </p>
         <p className="text-sm text-dark-muted">
-          Supports PDF, DOCX, XLSX, CSV
+          Supports PDF, DOCX, XLSX, CSV • Max 10MB
         </p>
       </div>
 

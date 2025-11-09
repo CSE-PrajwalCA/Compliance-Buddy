@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Filter, Search } from 'lucide-react'
+import { Filter, Search, X, Sparkles, TrendingUp, CheckCircle2, XCircle, Clock, FileText } from 'lucide-react'
 import useComplianceStore from '../../store/complianceStore'
 import ControlCard from './ControlCard'
 import ControlDetail from './ControlDetail'
+import CountingNumber from '../ui/CountingNumber'
 
 export default function ComplianceChecklist() {
   const { controls, selectedControl, setSelectedControl } = useComplianceStore()
@@ -29,21 +30,46 @@ export default function ComplianceChecklist() {
     <div className="space-y-6">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-effect rounded-xl p-4">
-          <p className="text-sm text-dark-muted mb-1">Total Controls</p>
-          <p className="text-2xl font-bold text-dark-text">{stats.total}</p>
+        <div className="glass-effect rounded-xl p-4 hover:scale-105 transition-all duration-300 cursor-pointer group">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-dark-muted">Total Controls</p>
+            <div className="w-8 h-8 bg-slate-600/20 rounded-lg flex items-center justify-center">
+              <FileText className="w-4 h-4 text-slate-400" />
+            </div>
+          </div>
+          <CountingNumber end={stats.total} className="text-3xl font-bold text-dark-text group-hover:scale-110 transition-transform" />
         </div>
-        <div className="glass-effect rounded-xl p-4">
-          <p className="text-sm text-dark-muted mb-1">Compliant</p>
-          <p className="text-2xl font-bold text-eco-400">{stats.compliant}</p>
+        <div className="glass-effect rounded-xl p-4 hover:scale-105 transition-all duration-300 cursor-pointer group">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-dark-muted">Compliant</p>
+            <div className="w-8 h-8 bg-eco-600/20 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-eco-400" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <CountingNumber end={stats.compliant} className="text-3xl font-bold text-eco-400 group-hover:scale-110 transition-transform" />
+            {stats.compliant > 0 && (
+              <TrendingUp className="w-5 h-5 text-eco-400 animate-bounce" />
+            )}
+          </div>
         </div>
-        <div className="glass-effect rounded-xl p-4">
-          <p className="text-sm text-dark-muted mb-1">Non-Compliant</p>
-          <p className="text-2xl font-bold text-red-400">{stats.nonCompliant}</p>
+        <div className="glass-effect rounded-xl p-4 hover:scale-105 transition-all duration-300 cursor-pointer group">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-dark-muted">Non-Compliant</p>
+            <div className="w-8 h-8 bg-red-600/20 rounded-lg flex items-center justify-center">
+              <XCircle className="w-4 h-4 text-red-400" />
+            </div>
+          </div>
+          <CountingNumber end={stats.nonCompliant} className="text-3xl font-bold text-red-400 group-hover:scale-110 transition-transform" />
         </div>
-        <div className="glass-effect rounded-xl p-4">
-          <p className="text-sm text-dark-muted mb-1">Pending</p>
-          <p className="text-2xl font-bold text-yellow-400">{stats.pending}</p>
+        <div className="glass-effect rounded-xl p-4 hover:scale-105 transition-all duration-300 cursor-pointer group">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-dark-muted">Pending</p>
+            <div className="w-8 h-8 bg-yellow-600/20 rounded-lg flex items-center justify-center">
+              <Clock className="w-4 h-4 text-yellow-400" />
+            </div>
+          </div>
+          <CountingNumber end={stats.pending} className="text-3xl font-bold text-yellow-400 group-hover:scale-110 transition-transform" />
         </div>
       </div>
 
@@ -53,11 +79,20 @@ export default function ComplianceChecklist() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-muted" />
           <input
             type="text"
-            placeholder="Search controls..."
+            placeholder="Try 'encryption', 'security', or 'audit'..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 glass-effect rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:ring-2 focus:ring-eco-600"
+            className="w-full pl-10 pr-10 py-3 glass-effect rounded-lg text-dark-text placeholder-dark-muted focus:outline-none focus:ring-2 focus:ring-eco-600 focus:ring-offset-2 focus:ring-offset-dark-bg transition-all"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full hover:bg-dark-elevated flex items-center justify-center transition-colors group"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4 text-dark-muted group-hover:text-dark-text" />
+            </button>
+          )}
         </div>
         
         <div className="flex items-center gap-2">
@@ -94,13 +129,54 @@ export default function ComplianceChecklist() {
           {selectedControl ? (
             <ControlDetail controlId={selectedControl} />
           ) : (
-            <div className="glass-effect rounded-xl p-12 text-center">
-              <div className="w-16 h-16 bg-eco-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Filter className="w-8 h-8 text-eco-400" />
+            <div className="glass-effect rounded-xl p-12 text-center animate-fade-in">
+              <div className="w-20 h-20 bg-gradient-to-br from-eco-600/20 to-eco-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
+                <Sparkles className="w-10 h-10 text-eco-400" />
               </div>
-              <p className="text-dark-muted">
-                Select a control to view details and upload documents
+              <h3 className="text-2xl font-bold text-dark-text mb-3">
+                Get Started
+              </h3>
+              <p className="text-dark-muted mb-8 text-lg">
+                Select a control from the left to begin compliance verification
               </p>
+              
+              {/* Step-by-step guide */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-eco-600/20 flex items-center justify-center border-2 border-eco-600/40">
+                    <span className="text-eco-400 font-bold">1</span>
+                  </div>
+                  <span className="text-dark-muted">Select Control</span>
+                </div>
+                
+                <div className="hidden sm:block text-dark-border">→</div>
+                <div className="sm:hidden text-dark-border rotate-90">→</div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-eco-600/20 flex items-center justify-center border-2 border-eco-600/40">
+                    <span className="text-eco-400 font-bold">2</span>
+                  </div>
+                  <span className="text-dark-muted">Upload Documents</span>
+                </div>
+                
+                <div className="hidden sm:block text-dark-border">→</div>
+                <div className="sm:hidden text-dark-border rotate-90">→</div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-eco-600/20 flex items-center justify-center border-2 border-eco-600/40">
+                    <span className="text-eco-400 font-bold">3</span>
+                  </div>
+                  <span className="text-dark-muted">Verify & Review</span>
+                </div>
+              </div>
+              
+              {/* Helpful tip */}
+              <div className="mt-8 p-4 bg-eco-600/10 border border-eco-600/20 rounded-lg">
+                <p className="text-sm text-eco-400 flex items-center justify-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Tip: Start with "Data Encryption at Rest" for a quick demo</span>
+                </p>
+              </div>
             </div>
           )}
         </div>

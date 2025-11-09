@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#f0f9ff" opacity="0.1"/>
+  
+  <!-- Head -->
+  <ellipse cx="100" cy="75" rx="35" ry="38" fill="#ffd4a3"/>
+  
+  <!-- Hair -->
+  <path d="M65 65 Q65 45, 85 40 Q100 35, 115 40 Q135 45, 135 65 L135 75 Q130 70, 120 68 Q110 66, 100 66 Q90 66, 80 68 Q70 70, 65 75 Z" fill="#4a4a4a"/>
+  
+  <!-- Headset -->
+  <path d="M60 70 Q55 70, 52 75 L52 85 Q52 90, 55 90 L58 90" stroke="#2d2d2d" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M140 70 Q145 70, 148 75 L148 85 Q148 90, 145 90 L142 90" stroke="#2d2d2d" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="55" cy="82" rx="6" ry="8" fill="#2d2d2d"/>
+  <ellipse cx="145" cy="82" rx="6" ry="8" fill="#2d2d2d"/>
+  
+  <!-- Microphone boom -->
+  <path d="M142 85 L155 92 Q158 93, 158 96 L158 100 Q158 103, 155 103 L150 103" stroke="#2d2d2d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="152" cy="101" r="4" fill="#2d2d2d"/>
+  
+  <!-- Face features -->
+  <circle cx="88" cy="75" r="3" fill="#2d2d2d"/>
+  <circle cx="112" cy="75" r="3" fill="#2d2d2d"/>
+  <path d="M85 88 Q100 95, 115 88" stroke="#2d2d2d" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Body - Suit -->
+  <path d="M65 110 L65 180 L135 180 L135 110 Q130 105, 120 105 L115 105 L115 115 Q115 118, 112 118 L88 118 Q85 118, 85 115 L85 105 L80 105 Q70 105, 65 110 Z" fill="#6b7280"/>
+  
+  <!-- Shirt collar -->
+  <path d="M85 105 L88 118 L92 110 L100 105 L108 110 L112 118 L115 105" fill="white"/>
+  
+  <!-- Tie -->
+  <path d="M100 105 L95 125 L100 145 L105 125 Z" fill="#3b82f6"/>
+  
+  <!-- Suit lapels -->
+  <path d="M85 105 L75 115 L75 130" stroke="#4b5563" stroke-width="2" fill="none"/>
+  <path d="M115 105 L125 115 L125 130" stroke="#4b5563" stroke-width="2" fill="none"/>
+  
+  <!-- Waving hand -->
+  <ellipse cx="45" cy="135" rx="12" ry="15" fill="#ffd4a3" transform="rotate(-20 45 135)"/>
+  <path d="M40 125 L38 115 M44 123 L44 112 M48 124 L50 113 M52 127 L55 117" stroke="#ffd4a3" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- Arm -->
+  <path d="M65 115 L50 125 L45 135" stroke="#6b7280" stroke-width="12" stroke-linecap="round"/>
+</svg>
