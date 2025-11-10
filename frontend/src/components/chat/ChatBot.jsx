@@ -2,13 +2,15 @@ import { useState, useRef, useEffect } from 'react'
 import { X, Send, Bot, User, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Button from '../ui/Button'
+import useComplianceStore from '../../store/complianceStore'
 
 export default function ChatBot({ onClose }) {
+  const { sendChatMessage } = useComplianceStore()
   const [messages, setMessages] = useState([
     {
       id: 1,
       role: 'assistant',
-      content: "Hi! I'm your Compliance Assistant. I can help explain verdicts, suggest missing evidence, and answer questions about compliance requirements. How can I help you today?",
+      content: "Hi! I'm your Compliance Assistant powered by Llama 3-8B. I can help explain verdicts, suggest missing evidence, and answer questions about compliance requirements. How can I help you today?",
       timestamp: new Date(),
     }
   ])
@@ -35,28 +37,34 @@ export default function ChatBot({ onClose }) {
     }
 
     setMessages(prev => [...prev, userMessage])
+    const userInput = input
     setInput('')
     setIsTyping(true)
 
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "Based on the uploaded documents, your data encryption policy looks comprehensive. However, I recommend adding specific details about key rotation schedules to strengthen compliance.",
-        "The non-compliant verdict was issued because the documentation lacks evidence of regular security audits. Consider uploading audit reports from the past 12 months.",
-        "To improve your compliance score, ensure all documents include: 1) Implementation dates, 2) Responsible parties, 3) Review schedules, and 4) Approval signatures.",
-        "Your access control policy is well-documented. The 85% score reflects strong alignment with industry standards. Minor improvements could include multi-factor authentication details.",
-      ]
-
+    try {
+      // Call backend API
+      const response = await sendChatMessage(userInput)
+      
       const aiMessage = {
         id: messages.length + 2,
         role: 'assistant',
-        content: responses[Math.floor(Math.random() * responses.length)],
+        content: response,
         timestamp: new Date(),
       }
 
       setMessages(prev => [...prev, aiMessage])
+    } catch (error) {
+      console.error('Chat error:', error)
+      const errorMessage = {
+        id: messages.length + 2,
+        role: 'assistant',
+        content: "I apologize, but I'm having trouble connecting to the backend. Please ensure the API is running and try again.",
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsTyping(false)
-    }, 2000)
+    }
   }
 
   const handleKeyPress = (e) => {

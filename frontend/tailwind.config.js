@@ -8,19 +8,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Sustainable green palette
+        // Sustainable green palette - Hackathon Theme
         eco: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          50: '#E8F5E9',
+          100: '#C8E6C9',
+          200: '#A5D6A7',
+          300: '#81C784',
+          400: '#00A676', // Primary eco green
+          500: '#00A676',
+          600: '#00926A',
+          700: '#007D5C',
+          800: '#1B4332', // Deep green accent
+          900: '#0B3D2E', // Text color
           950: '#052e16',
+        },
+        // Mint background
+        mint: {
+          50: '#E8F5E9',
+          100: '#E8F5E9',
+          200: '#d4ede6',
+          300: '#c0e5dd',
         },
         // Dark mode optimized colors
         dark: {

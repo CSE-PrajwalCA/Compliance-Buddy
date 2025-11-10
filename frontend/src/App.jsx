@@ -1,16 +1,25 @@
-import { useState } from 'react'
-import { Leaf, Activity, MessageSquare } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Leaf, LayoutDashboard, CheckSquare, Moon, Sun } from 'lucide-react'
 import Header from './components/layout/Header'
 import ComplianceChecklist from './components/compliance/ComplianceChecklist'
-import ChatBot from './components/chat/ChatBot'
+import ComplianceDashboard from './components/dashboard/ComplianceDashboard'
 import SustainabilityMetrics from './components/metrics/SustainabilityMetrics'
 
 function App() {
-  const [isChatOpen, setIsChatOpen] = useState(false)
   const [showMetrics, setShowMetrics] = useState(false)
+  const [activeTab, setActiveTab] = useState('dashboard') // dashboard, checklist
+  const [darkMode, setDarkMode] = useState(true)
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className={`min-h-screen ${darkMode ? 'bg-dark-bg' : 'bg-mint-50'}`}>
       <Header 
         onToggleMetrics={() => setShowMetrics(!showMetrics)}
         showMetrics={showMetrics}
@@ -18,18 +27,66 @@ function App() {
       
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Hero Section */}
-        <div className="mb-12 text-center animate-fade-in">
+        <div className="mb-8 text-center animate-fade-in">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-effect mb-4">
             <Leaf className="w-4 h-4 text-eco-400" />
-            <span className="text-sm text-dark-muted">Powered by Sustainable AI</span>
+            <span className={`text-sm ${darkMode ? 'text-dark-muted' : 'text-eco-900'}`}>
+              Powered by Sustainable AI
+            </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-eco-400 to-eco-600 bg-clip-text text-transparent">
-            Compliance Buddy
+            Compliance Buddy Dashboard
           </h1>
-          <p className="text-dark-muted text-lg max-w-2xl mx-auto">
-            AI-powered compliance verification with minimal environmental impact. 
-            Upload documents, get instant verdicts, and ensure regulatory compliance.
+          <p className={`text-lg max-w-2xl mx-auto ${darkMode ? 'text-dark-muted' : 'text-eco-900'}`}>
+            Sustainable AI Validation Engine
           </p>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                activeTab === 'dashboard'
+                  ? 'eco-gradient text-white shadow-lg'
+                  : 'glass-effect text-dark-muted hover:text-dark-text'
+              }`}
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab('checklist')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                activeTab === 'checklist'
+                  ? 'eco-gradient text-white shadow-lg'
+                  : 'glass-effect text-dark-muted hover:text-dark-text'
+              }`}
+            >
+              <CheckSquare className="w-4 h-4" />
+              Checklist
+            </button>
+          </div>
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="flex items-center gap-2 px-4 py-2 glass-effect rounded-lg hover:bg-dark-elevated transition-colors"
+            aria-label="Toggle dark mode"
+          >
+            {darkMode ? (
+              <>
+                <Sun className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm text-dark-muted">Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-eco-400" />
+                <span className="text-sm text-eco-900">Dark</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Sustainability Metrics Panel */}
@@ -39,24 +96,13 @@ function App() {
           </div>
         )}
 
-        {/* Main Compliance Checklist */}
-        <ComplianceChecklist />
+        {/* Content based on active tab */}
+        {activeTab === 'dashboard' ? (
+          <ComplianceDashboard />
+        ) : (
+          <ComplianceChecklist />
+        )}
       </main>
-
-      {/* Floating Chat Button */}
-      <button
-        onClick={() => setIsChatOpen(!isChatOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 eco-gradient rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-50"
-        aria-label="Toggle chat"
-      >
-        <MessageSquare className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-      </button>
-
-      {/* Chat Interface */}
-      {isChatOpen && (
-        <ChatBot onClose={() => setIsChatOpen(false)} />
-      )}
     </div>
   )
 }
