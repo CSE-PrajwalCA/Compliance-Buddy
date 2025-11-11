@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Compliance Buddy</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="popup-root">
+    <header>
+      <h1>Compliance Buddy</h1>
+    </header>
+
+    <section id="status-section">
+      <div id="status-line">Extension ready</div>
+      <button id="scan-btn">🔍 Scan Page</button>
+      <button id="open-dashboard-btn">📊 Open Dashboard</button>
+    </section>
+
+    <section id="checklist-section">
+      <h2>Detected Checklist</h2>
+      <div id="checklist-list">
+        <em>No checklist scanned yet. Click “Scan Page”.</em>
+      </div>
+    </section>
+
+    <section id="upload-section">
+      <h2>Upload Evidence (Bulk)</h2>
+      <input id="popup-files" type="file" multiple />
+      <button id="validate-btn">Validate Evidence</button>
+      <div id="upload-result" class="muted small"></div>
+    </section>
+
+    <footer>
+      <small class="muted">
+        Local backend:
+        <span id="backend-url">http://localhost:8000</span>
+      </small>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
