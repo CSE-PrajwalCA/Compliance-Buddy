@@ -148,7 +148,10 @@ async function runChecklistScan() {
   let questions = [];
   containers.forEach((c) => (questions = questions.concat(extractQuestions(c))));
   if (!questions.length) return;
+  
+  // Store for both internal use and popup access
   window.__cb_checklist = questions;
+  window.__cb_last_checklist = questions;
 
   // Show analyzing badges
   questions.forEach((q) => {
@@ -174,22 +177,34 @@ async function runChecklistScan() {
   });
 }
 
-/* ---------- 4) Evidence Validation (Bulk Upload Triggered from Popup) ---------- */
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  if (message.type === "START_VALIDATION") {
-    console.log("[ComplianceBuddy] Starting evidence validation...");
+/* ---------- 4) Automatic Evidence Interception ---------- */
+function setupFileInterceptor() {
+  const evidenceInput = document.querySelector("#common-evidence");
+  if (!evidenceInput) {
+    console.log("[ComplianceBuddy] No evidence input found on page");
+    return;
+  }
 
-    const evidenceInput = document.querySelector("#common-evidence");
-    if (!evidenceInput) {
-      alert("No evidence upload section found on this page.");
-      return;
-    }
+  console.log("[ComplianceBuddy] File interceptor attached to #common-evidence");
 
-    const files = Array.from(evidenceInput.files || []);
-    if (!files.length) {
-      alert("Please upload evidence documents first.");
-      return;
-    }
+  // Intercept file selection
+  evidenceInput.addEventListener("change", async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    console.log(`[ComplianceBuddy] Intercepted ${files.length} file(s):`, files.map(f => f.name));
+
+    // Notify popup
+    chrome.runtime.sendMessage({
+      type: "EVIDENCE_UPLOAD_DETECTED",
+      fileCount: files.length
+    });
+
+    // Show "validating" badges on all questions
+    const questions = document.querySelectorAll("[data-cb-qid]");
+    questions.forEach(el => {
+      placeBadgeForElement(el, "info", "Validating evidence...", null);
+    });
 
     // Prepare file data
     const fileBuffers = await Promise.all(files.map((f) => f.arrayBuffer()));
@@ -202,30 +217,55 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     // Send to background for backend upload
     chrome.runtime.sendMessage({ type: "VALIDATE_BULK_EVIDENCE", payload }, (resp) => {
       if (!resp || resp.error) {
-        console.error("Evidence validation error", resp?.error);
-        alert("Validation failed. Check console logs.");
+        console.error("[ComplianceBuddy] Validation error:", resp?.error);
+        chrome.runtime.sendMessage({
+          type: "EVIDENCE_VALIDATION_ERROR",
+          error: resp?.error || "Unknown error"
+        });
         return;
       }
 
       const results = resp.results || [];
+      console.log(`[ComplianceBuddy] Received ${results.length} validation results`);
+
+      // Apply verdicts to questions
       results.forEach((r) => {
         const el = document.querySelector(`[data-cb-qid="${r.question_id}"]`);
         if (el) {
-          const html = `<b>Explanation:</b> ${escapeHtml(r.explanation || "")}<br><b>Recommendation:</b> ${escapeHtml(
+          const html = `<b>Verdict:</b> ${r.verdict}<br><b>Score:</b> ${r.score}%<br><b>Explanation:</b> ${escapeHtml(r.explanation || "")}<br><b>Recommendation:</b> ${escapeHtml(
             r.recommendation || ""
           )}`;
           placeBadgeForElement(el, r.verdict, html, r.score);
         }
       });
+
+      // Notify popup
+      chrome.runtime.sendMessage({
+        type: "EVIDENCE_VALIDATION_COMPLETE",
+        results: results
+      });
     });
+  });
+}
+
+/* ---------- 5) Message Listener for Manual Scans ---------- */
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "RUN_SCAN_NOW") {
+    runChecklistScan();
+    setupFileInterceptor();
+    sendResponse({ success: true });
   }
+  return true;
 });
 
-/* ---------- 5) Misc Helpers ---------- */
+/* ---------- 6) Misc Helpers ---------- */
 function escapeHtml(s) {
   if (!s) return "";
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-/* ---------- 6) Auto-run scan ---------- */
-window.addEventListener("load", () => setTimeout(runChecklistScan, 800));
+/* ---------- 7) Auto-run scan and setup interceptor ---------- */
+window.addEventListener("load", () => {
+  setTimeout(runChecklistScan, 800);
+  setTimeout(setupFileInterceptor, 1000); // Setup file interceptor after scan
+});

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISO 27001:2022 Compliance Assessment Portal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Segoe UI", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+      margin: 0;
+      padding: 0;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    /* Header - Professional Audit Portal Style */
+    header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+      color: #ffffff;
+      padding: 24px 48px;
+      box-shadow: 0 4px 20px rgba(30, 58, 138, 0.3);
+      border-bottom: 3px solid #60a5fa;
+    }
+    
+    header .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+    
+    header .meta {
+      font-size: 0.875rem;
+      opacity: 0.95;
+      display: flex;
+      gap: 24px;
+    }
+    
+    header .meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      margin: 32px auto;
+      background: #ffffff;
+      padding: 48px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Info Banner */
+    .info-banner {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 4px solid #3b82f6;
+      padding: 20px 24px;
+      border-radius: 8px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+    
+    .info-banner h3 {
+      margin: 0 0 8px 0;
+      color: #1e40af;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .info-banner p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.9375rem;
+    }
+
+    /* Evidence Upload Section - Premium Design */
+    #evidence-section {
+      border: 2px dashed #60a5fa;
+      padding: 32px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      text-align: center;
+      margin: 40px 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+    }
+    
+    #evidence-section:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
+    }
+    
+    #evidence-section h3 {
+      color: #1e40af;
+      margin: 0 0 12px 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    
+    #evidence-section p {
+      color: #475569;
+      font-size: 0.9375rem;
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+    
+    #evidence-section input[type="file"] {
+      margin: 20px 0;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.9375rem;
+    }
+    
+    #validate-btn {
+      margin-top: 16px;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    #validate-btn:hover {
+      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+    
+    #validate-btn:active {
+      transform: translateY(0);
+    }
+    
+    #upload-status {
+      margin-top: 16px;
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    section:last-of-type {
+      border-bottom: none;
+    }
+    
+    h2 {
+      border-left: 5px solid #3b82f6;
+      padding-left: 16px;
+      margin: 0 0 28px 0;
+      color: #1e40af;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    /* Question Cards - Professional Design */
+    .question {
+      margin-bottom: 20px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      position: relative;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    
+    .question:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+      transform: translateY(-2px);
+    }
+    
+    .question::before {
+      content: attr(data-cb-qid);
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: #3b82f6;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+    
+    .question label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1e293b;
+      font-size: 1rem;
+      line-height: 1.5;
+      padding-top: 4px;
+    }
+    
+    .answer-group {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      margin-top: 12px;
+    }
+    
+    .answer-group input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: #3b82f6;
+    }
+    
+    .answer-group label {
+      margin: 0;
+      padding: 0;
+      font-weight: 500;
+      cursor: pointer;
+      color: #475569;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    footer strong {
+      color: #64748b;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        padding: 20px 24px;
+      }
+      
+      header .header-content {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      
+      main {
+        margin: 20px;
+        padding: 24px;
+      }
+      
+      .question {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>ISO 27001:2022 Compliance Assessment Portal</h1>
+      <div class="meta">
+        <span>📋 Assessment ID: <strong>AUDIT-2025-001</strong></span>
+        <span>📅 Date: <strong>November 11, 2025</strong></span>
+      </div>
+    </div>
+  </header>
+  
+  <main>
+    <!-- Info Banner -->
+    <div class="info-banner">
+      <h3>🔒 Information Security Management System Assessment</h3>
+      <p>This checklist evaluates your organization's compliance with ISO 27001:2022 standards. Please answer all questions honestly and upload supporting evidence for verification. Responses will be validated using AI-powered analysis.</p>
+    </div>
+
+    <form class="checklist">
+
+      <!-- Evidence Upload Section -->
+      <div id="evidence-section">
+        <h3>📎 Upload Evidence Documents</h3>
+        <p>Select all relevant documents that support your ISMS controls.</p>
+        <p><strong>Accepted formats:</strong> PDF, DOCX, XLSX, CSV, TXT, PNG, JPG, XML, YAML</p>
+        <input type="file" id="common-evidence" multiple accept=".pdf,.docx,.doc,.xlsx,.xls,.csv,.txt,.png,.jpg,.jpeg,.xml,.yaml,.yml" />
+        <br />
+        <button id="validate-btn" type="button">🚀 Validate Evidence</button>
+        <p id="upload-status"></p>
+      </div>
+
+      <!-- Context of the Organization / Leadership -->
+      <section id="context">
+        <h2>Context of the Organization / Leadership</h2>
+
+        <div class="question" data-cb-qid="q1">
+          <label>Have you determined the external and internal issues relevant to your organization’s purpose that affect your ability to achieve the intended results of the ISMS?</label>
+          <div class="answer-group">
+            <input type="radio" name="q1" value="Yes"> Yes
+            <input type="radio" name="q1" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q2">
+          <label>Are the information security policy and objectives compatible with the organization’s context and strategic direction?</label>
+          <div class="answer-group">
+            <input type="radio" name="q2" value="Yes"> Yes
+            <input type="radio" name="q2" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q3">
+          <label>Have you determined the needs and expectations of interested parties that are relevant to the ISMS, and are these reviewed regularly?</label>
+          <div class="answer-group">
+            <input type="radio" name="q3" value="Yes"> Yes
+            <input type="radio" name="q3" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q4">
+          <label>Have you determined the scope of your ISMS, taking into account internal/external issues and activities by other organizations?</label>
+          <div class="answer-group">
+            <input type="radio" name="q4" value="Yes"> Yes
+            <input type="radio" name="q4" value="No"> No
+          </div>
+        </div>
+      </section>
+
+      <!-- Planning -->
+      <section id="planning">
+        <h2>Planning</h2>
+
+        <div class="question" data-cb-qid="q5">
+          <label>Have risks and opportunities identified in the scope been addressed to ensure the ISMS can achieve its intended results?</label>
+          <div class="answer-group">
+            <input type="radio" name="q5" value="Yes"> Yes
+            <input type="radio" name="q5" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q6">
+          <label>Has an information security risk assessment process been defined and developed to ensure consistent, valid, and comparable results?</label>
+          <div class="answer-group">
+            <input type="radio" name="q6" value="Yes"> Yes
+            <input type="radio" name="q6" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q7">
+          <label>Are information security risks compared to established risk criteria and prioritized?</label>
+          <div class="answer-group">
+            <input type="radio" name="q7" value="Yes"> Yes
+            <input type="radio" name="q7" value="No"> No
+          </div>
+        </div>
+      </section>
+
+      <!-- Support -->
+      <section id="support">
+        <h2>Support</h2>
+
+        <div class="question" data-cb-qid="q8">
+          <label>Have you determined and provided resources needed to establish, implement, and improve the ISMS (people, infrastructure, environment)?</label>
+          <div class="answer-group">
+            <input type="radio" name="q8" value="Yes"> Yes
+            <input type="radio" name="q8" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q9">
+          <label>Have you ensured that persons doing work under the organization’s control are aware of the ISMS policy and their contribution to its effectiveness?</label>
+          <div class="answer-group">
+            <input type="radio" name="q9" value="Yes"> Yes
+            <input type="radio" name="q9" value="No"> No
+          </div>
+        </div>
+      </section>
+
+      <!-- Operations -->
+      <section id="operations">
+        <h2>Operations</h2>
+
+        <div class="question" data-cb-qid="q10">
+          <label>Have you implemented actions determined in Clause 6 by establishing criteria for processes and controlling them accordingly?</label>
+          <div class="answer-group">
+            <input type="radio" name="q10" value="Yes"> Yes
+            <input type="radio" name="q10" value="No"> No
+          </div>
+        </div>
+      </section>
+
+      <!-- Performance Evaluation -->
+      <section id="evaluation">
+        <h2>Performance Evaluation</h2>
+
+        <div class="question" data-cb-qid="q11">
+          <label>Has the organization established a program for internal audits to check ISMS effectiveness and conformance to ISO 27001?</label>
+          <div class="answer-group">
+            <input type="radio" name="q11" value="Yes"> Yes
+            <input type="radio" name="q11" value="No"> No
+          </div>
+        </div>
+
+        <div class="question" data-cb-qid="q12">
+          <label>Do top management undertake regular and periodic reviews of the ISMS?</label>
+          <div class="answer-group">
+            <input type="radio" name="q12" value="Yes"> Yes
+            <input type="radio" name="q12" value="No"> No
+          </div>
+        </div>
+      </section>
+    </form>
+
+    <footer>
+      <strong>Compliance Buddy</strong> — AI-Powered Compliance Verification System<br>
+      © 2025 Green Mind Hackathon | Sample Audit Portal for Extension Testing<br>
+      <small>ISO 27001:2022 ISMS Assessment Framework</small>
+    </footer>
+  </main>
+
+  <script>
+    // Note: The Compliance Buddy extension automatically intercepts file uploads
+    // This button provides visual feedback only
+    
+    document.getElementById('validate-btn').addEventListener('click', () => {
+      const files = document.getElementById('common-evidence').files;
+      const statusEl = document.getElementById('upload-status');
+      
+      if (!files.length) {
+        statusEl.style.color = '#dc2626';
+        statusEl.textContent = '⚠️ Please select evidence files first.';
+      } else {
+        statusEl.style.color = '#16a34a';
+        statusEl.textContent = `✅ ${files.length} file(s) selected. Extension will validate automatically.`;
+        
+        // Trigger change event so extension intercepts (in case file was selected before extension loaded)
+        const event = new Event('change', { bubbles: true });
+        document.getElementById('common-evidence').dispatchEvent(event);
+      }
+    });
+
+    // Debug logging for extension development
+    console.log('[Audit Page] Compliance Buddy Audit Page Loaded');
+    console.log('[Audit Page] Total Questions:', document.querySelectorAll('.question').length);
+    console.log('[Audit Page] Questions:', Array.from(document.querySelectorAll('.question')).map(q => ({
+      id: q.getAttribute('data-cb-qid'),
+      text: q.querySelector('label')?.innerText.substring(0, 50) + '...'
+    })));
+    
+    // Listen for file input changes (extension will also listen)
+    document.getElementById('common-evidence').addEventListener('change', (e) => {
+      console.log('[Audit Page] File input changed, files:', Array.from(e.target.files).map(f => f.name));
+    });
+  </script>
+</body>
+</html>

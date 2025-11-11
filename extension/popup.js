@@ -2,8 +2,7 @@
    ----------------------------
    - Scans current page for checklist items
    - Displays them for user confirmation
-   - Lets user upload multiple evidence files (bulk)
-   - Sends evidence to backend via background.js
+   - Shows status of automatic file interception
 */
 
 const statusLine = document.getElementById("status-line");
@@ -11,15 +10,13 @@ const scanBtn = document.getElementById("scan-btn");
 const openDashBtn = document.getElementById("open-dashboard-btn");
 const checklistList = document.getElementById("checklist-list");
 const backendUrlEl = document.getElementById("backend-url");
-const uploadFilesInput = document.getElementById("popup-files");
-const validateBtn = document.getElementById("validate-btn");
-const uploadResult = document.getElementById("upload-result");
+const evidenceStatus = document.getElementById("evidence-status");
 
 const BACKEND_BASE = "http://localhost:8000"; // must match background.js
 
 /* ---------- 1️⃣ Open dashboard ---------- */
 openDashBtn.addEventListener("click", () => {
-  const dashUrl = `${BACKEND_BASE}/dashboard`;
+  const dashUrl = "http://localhost:3000"; // Frontend React dashboard
   chrome.tabs.create({ url: dashUrl });
 });
 
@@ -66,64 +63,25 @@ function renderChecklist(items) {
   });
 }
 
-/* ---------- 5️⃣ Validate evidence (bulk upload) ---------- */
-validateBtn.addEventListener("click", async () => {
-  const files = Array.from(uploadFilesInput.files || []);
-  if (files.length === 0) {
-    uploadResult.innerText = "⚠️ Please select one or more files.";
-    return;
+/* ---------- 5️⃣ Listen for evidence upload events from content script ---------- */
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "EVIDENCE_UPLOAD_DETECTED") {
+    evidenceStatus.innerHTML = `<strong>⏳ Validating ${message.fileCount} file(s)...</strong>`;
+    statusLine.innerText = "⏳ Evidence validation in progress";
   }
-
-  statusLine.innerText = "⏳ Uploading and validating evidence...";
-  uploadResult.innerText = "";
-
-  const filePayloads = [];
-  for (const f of files) {
-    const ab = await f.arrayBuffer();
-    filePayloads.push({
-      filename: f.name,
-      filetype: f.type,
-      file: ab,
-    });
+  
+  if (message.type === "EVIDENCE_VALIDATION_COMPLETE") {
+    const results = message.results || [];
+    evidenceStatus.innerHTML = `<strong>✅ Validated ${results.length} evidence file(s)</strong>`;
+    statusLine.innerText = "✅ Validation complete";
   }
-
-  chrome.runtime.sendMessage(
-    {
-      type: "VALIDATE_BULK_EVIDENCE",
-      payload: filePayloads,
-    },
-    (resp) => {
-      if (!resp) {
-        uploadResult.innerText = "❌ No response from backend.";
-        statusLine.innerText = "Validation failed.";
-        return;
-      }
-
-      if (resp.error) {
-        uploadResult.innerText = "❌ Error: " + resp.error;
-        statusLine.innerText = "Validation error.";
-        return;
-      }
-
-      // Expected resp.results = [ {checklist_id, verdict, score, explanation, recommendation} ]
-      const results = resp.results || [];
-      uploadResult.innerText = `✅ ${results.length} evidence files validated.`;
-
-      // Apply verdicts to content page if applicable
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tabId = tabs?.[0]?.id;
-        if (!tabId) return;
-        results.forEach((r) => {
-          chrome.tabs.sendMessage(tabId, {
-            type: "APPLY_VERDICT",
-            payload: { question_id: r.checklist_id, verdict: r },
-          });
-        });
-      });
-
-      statusLine.innerText = "✅ Validation complete";
-    }
-  );
+  
+  if (message.type === "EVIDENCE_VALIDATION_ERROR") {
+    evidenceStatus.innerHTML = `<strong>❌ Validation failed: ${message.error}</strong>`;
+    statusLine.innerText = "❌ Validation error";
+  }
+  
+  sendResponse({ received: true });
 });
 
 /* ---------- helpers ---------- */
